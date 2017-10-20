@@ -34,12 +34,6 @@ def reduceToFinalLayer(G):
         return reduceOnce(G)
     return reduceToFinalLayer(reduceOnce(G))
 
-oneReductionLayer = reduceOnce(I)
-pyramidRoot = reduceToFinalLayer(I)
-basePoints = [[-0.5, 0, -0.5], [-0.5, 0, 0.5], [0.5, 0, 0.5], [0.5, 0, -0.5]]
-nodes = []
-base = ShowBase()
-
 def transformCurve(curve, x, y):
     transformedCurve = []
     for point in curve:
@@ -99,9 +93,19 @@ def drawHilbertCurve(pts):
 
 def getTransformScale(n, s):
     if n+1 <= s/2:
-        return -n/s - (n+1)/s
+        return -(n-(s/2))/s
     else:
-        return n/s
+        return (n+1)/s
+
+def getXTransformScale(x, s):
+    if x == 0:
+        return -(x-1)/s
+    elif x == s:
+        return (x-1)/s
+    elif x <= s/2:
+        return -x/s + getXTransformScale(x, s/2)
+    else:
+        return (x-1)/s + getXTransformScale(s-x+1, s/2)
 
 def getProperDepth(val):
     if val >= 5:
@@ -110,17 +114,37 @@ def getProperDepth(val):
         return 1
     return int(floor(val))
 
+oneReductionLayer = reduceOnce(I)
+pyramidRoot = reduceToFinalLayer(I)
+basePoints = [[-0.5, 0, -0.5], [-0.5, 0, 0.5], [0.5, 0, 0.5], [0.5, 0, -0.5]]
+nodes = []
+base = ShowBase()
 points = []
 size = len(oneReductionLayer)
 sizeScale = size
+quadrantCurves = []
 for row in range(size):
+    rowCurves = []
+    for col in range(size):
+        depth = getProperDepth(oneReductionLayer[row][col])
+        quadrantCurve = scaleCurve(generateHilbertCurveAtDepth(basePoints, depth, 2), sizeScale)
+        if row % 2 == 1 and col % 2 == 0:
+            quadrantCurve = rotateCurveRight(quadrantCurve)
+        elif row % 2 == 1 and col % 2 == 1:
+            quadrantCurve = rotateCurveLeft(quadrantCurve)
+        rowCurves.append(quadrantCurve)
+    quadrantCurves.append(rowCurves)
+
+print range(size, 0, -2), range(0, size, 2)
+for row in range(size)[::-1]:
     for col in range(size):
         depth = getProperDepth(oneReductionLayer[row][col])
         # sizeScale = float(depth)
-        xTransformScale = getTransformScale(row, float(size))
-        yTransformScale = getTransformScale(col, float(size))
-        sectionCurve = transformCurve(scaleCurve(generateHilbertCurveAtDepth(basePoints, depth, sizeScale),
-                                                 sizeScale), xTransformScale, yTransformScale)
+        xTransformScale = getXTransformScale(col, float(size))
+        yTransformScale = getTransformScale(row, float(size)) - 1/size
+        curvePoints = quadrantCurves[row][col]
+        print curvePoints
+        sectionCurve = transformCurve(curvePoints, xTransformScale, yTransformScale)
         for point in sectionCurve:
             points.append(point)
 
