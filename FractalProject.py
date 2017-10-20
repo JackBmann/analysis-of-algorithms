@@ -78,7 +78,6 @@ blue = [0, 0, 1]
 iterate(base_triangle, iterations)
 
 for node in nodes:
-    node_path = NodePath(node)
-    node_path.reparentTo(base.aspect2d)
+    base.aspect2d.attach_new_node(node)
 
 base.run()
