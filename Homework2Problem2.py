@@ -17,20 +17,23 @@ with open(filepath) as csvfile:
 
 # Problem 2 Part B                                                                                      Part C
 def reduceOnce(G):                                                                                      # n+c
-    print(str(len(G)) + "x" + str(len(G)) + " reduction: ")
-    newG = []
+    print(str(len(G)) + "x" + str(len(G)) + " reduction: ")                                             # n
+    newG = []                                                                                           # n
     for row in range(0, len(G), 2):                                                                     # n/2
         newRow = []                                                                                     # c
         for col in range(0, len(G[0]), 2):                                                              # n/2
             newRow.append((G[row][col] + G[row][col+1] + G[row+1][col] + G[row+1][col+1]) / 4.0)        # c
         newG.append(newRow)                                                                             # c
-        print(newRow)
+        print(newRow)                                                                                   # c
     return newG                                                                                         # c
 
 
-def reduceToFinalLayer(G):                                                                              # n^2 + c
+def reduceToFinalLayer(G):                                                                              # (1/2)n^2 + cn + c
     if len(G) == 2:                                                                                     # c
         return reduceOnce(G)                                                                            # n+c
     return reduceToFinalLayer(reduceOnce(G))                                                            # (n/2)*(n+c)
 
-reduceToFinalLayer(I)
+
+reduceToFinalLayer(I)                                                                                   # (1/2)n^2 + cn + c
+
+# Total computational cost: (1/2)n^2 + cn + c
