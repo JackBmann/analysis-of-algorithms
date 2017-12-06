@@ -2,7 +2,7 @@ from sys import stdin
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import LineSegs, NodePath
 from math import floor
-from scipy import misc
+from libraries.scipy import misc
 
 # Problem 4 Part A                                                                                      # Part B
 print("Enter .bmp file path would you like to read: ")                                                  # c
